@@ -21,6 +21,7 @@ import { planAnchors } from './edgeGeometry'
 import { planRoutes, planLabels, type LineStyle } from './edgeRouting'
 import { activePath } from './activePath'
 import WireGuardNode from './WireGuardNode'
+import { AutoRoutes } from './AutoRoutes'
 import { wireGuardNodeState } from './wireguard'
 import { ResourceDetails } from './Resources'
 import { Badge, Field } from './components'
@@ -662,6 +663,7 @@ export default function Topology({
                   }
                 />
               </Field>
+              <AutoRoutes network={network} node={node} change={change} />
               <div className="advertised-subnets">
                 <strong>Advertised subnets</strong>
                 {(node.advertised_subnets || []).map((subnet, index) => (

@@ -22,6 +22,7 @@ export type AdvertisedSubnet = { prefix: string; gateway_mode: 'off' | 'route' |
 export type Node = {
   wireguard?: { public_key: string; endpoint?: string }
   advertised_subnets?: AdvertisedSubnet[]
+  auto_routes?: string[]
   id: string
   agent_id: string
   name: string
