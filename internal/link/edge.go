@@ -20,6 +20,7 @@ type Edge struct {
 	aliases      map[string]string
 	switched     time.Time
 	selection    *selectionState
+	rttSelection rttSelection
 }
 
 func newEdge(preferred string) *Edge {
@@ -177,6 +178,7 @@ func (e *Edge) bestLocked(now time.Time) *Link {
 	}
 	var best, preferred *Link
 	var bestRTT float64
+	currentEligible := false
 	for id, link := range e.links {
 		if replacement := e.links[e.replacements[id]]; replacement != nil && replacement.healthy() {
 			continue
@@ -184,6 +186,9 @@ func (e *Edge) bestLocked(now time.Time) *Link {
 		stats := link.Stats()
 		if !stats.Healthy || link.RenewalDue() && link.Created().Before(newest[stats.CandidateID]) {
 			continue
+		}
+		if id == e.active {
+			currentEligible = true
 		}
 		if best == nil || stats.RTTMillis < bestRTT || stats.RTTMillis == bestRTT && id < best.ID() {
 			best = link
@@ -193,9 +198,9 @@ func (e *Edge) bestLocked(now time.Time) *Link {
 			preferred = link
 		}
 	}
-	selected := best
 	if preferred != nil {
-		selected = preferred
+		e.rttSelection = rttSelection{}
+		return preferred
 	}
-	return selected
+	return e.stableRTTLocked(now, best, currentEligible)
 }

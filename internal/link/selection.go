@@ -67,7 +67,12 @@ func (e *Edge) advanceLocked(now time.Time) {
 	if !s.leader {
 		return
 	}
-	best := e.bestLocked(now)
+	// Finish the current transaction before considering another RTT winner.
+	// A failed or removed target still permits immediate failover.
+	best := e.links[s.target]
+	if s.confirmed || best == nil || !best.healthy() {
+		best = e.bestLocked(now)
+	}
 	if best == nil {
 		return
 	}

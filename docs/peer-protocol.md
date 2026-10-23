@@ -304,7 +304,13 @@ for both directions of an Edge. Its measured RTT drives automatic selection;
 standby probes and telemetry continue at both endpoints. Explicit candidate
 preference overrides RTT. Automatic selection chooses the lowest measured RTT
 among the retained healthy candidates, with Link ID as a deterministic tie break.
-There is no minimum RTT improvement or hold-time threshold. The coordinated
+Automatic RTT optimization keeps the current eligible Link for at least 10
+seconds. A challenger must improve RTT by both 2 ms and 20%, and remain the
+best candidate meeting that margin for 3 seconds after the hold period. A lost
+advantage or a different challenger resets this confirmation window. Initial
+selection, failure, required session replacement and explicit preference bypass
+these delays. An unconfirmed negotiation retains its target while that Link is
+healthy and present; RTT changes cannot restart the negotiation. The coordinated
 switch below still completes before the follower starts using the selected Link.
 
 Selection messages are encrypted application messages on the **proposed Link**.
